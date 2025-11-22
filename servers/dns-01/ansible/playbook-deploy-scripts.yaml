@@ -1,0 +1,20 @@
+- name: Deploy scripts
+  hosts: dns-01
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Deploy scripts
+      copy:
+        src: ../scripts
+        dest: /opt/dns-01
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Create cron job to run wol-all.sh every 3 minutes
+      cron:
+        name: "Wake on LAN all hosts"
+        minute: "*/3"
+        job: "/opt/minilab/scripts/wol-all.sh"
+        user: root

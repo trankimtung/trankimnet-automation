@@ -1,0 +1,85 @@
+name: services
+
+services:
+
+  pi-hole:
+    container_name: pi-hole
+    image: pihole/pihole:latest
+    hostname: dns-01
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "8080:8080"
+      - "8443:8443"
+    networks:
+      - backend
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+    environment:
+      TZ: 'Asia/Singapore'
+      FTLCONF_dns_listeningMode: 'all'
+      FTLCONF_dns_upstreams: 'unbound'
+      FTLCONF_dns_ignoreLocalhost: 'true'
+      PIHOLE_UID: '1001'
+      PIHOLE_GID: '1001'
+      FTLCONF_webserver_port: '8080o,[::]:8080o,8443os,[::]:8443os'
+    volumes:
+      - 'pihole-data:/etc/pihole'
+    healthcheck:
+      test: [ "CMD", "dig", "@127.0.0.1", "pi.hole" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    depends_on:
+      - unbound
+
+  unbound:
+    container_name: unbound
+    hostname: unbound
+    image: trankimtung/unbound:latest
+    networks:
+      - backend
+    restart: unless-stopped
+
+  step-ca:
+    image: smallstep/step-ca:latest
+    container_name: step-ca
+    hostname: dns-01
+    user: "1002:1002"
+    ports:
+      - "443:443"
+    volumes:
+      - /home/ca:/home/step
+    networks:
+      - backend
+    dns:
+      - 10.0.0.2
+      - 10.0.0.3
+    restart: unless-stopped
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    hostname: dns-01
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro,rslave
+      - /sys:/host/sys:ro,rslave
+      - /:/rootfs:ro,rslave
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+      - '--collector.processes'
+    restart: unless-stopped
+
+volumes:
+  pihole-data:
+
+networks:
+  backend:
+    driver: bridge
