@@ -1,0 +1,12 @@
+- name: Deploy docker compose templates
+  copy:
+    src: ../compose
+    dest: /opt/dns-02
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Bring up services
+  community.docker.docker_compose_v2:
+    project_src: /opt/dns-02/compose
+    remove_orphans: true

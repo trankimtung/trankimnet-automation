@@ -1,5 +1,5 @@
-- name: Update debian servers
-  hosts: debian-servers
+- name: Update dns servers
+  hosts: dns
   gather_facts: true
   become: true
 
