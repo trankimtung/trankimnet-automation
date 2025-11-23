@@ -1,0 +1,153 @@
+#cloud-config
+
+# System configuration
+hostname: ubuntu
+fqdn: ubuntu
+timezone: UTC
+
+# Package management
+package_update: true
+package_upgrade: true
+package_reboot_if_required: true
+
+# Additional packages to install
+packages:
+  - curl
+  - wget
+  - htop
+  - software-properties-common
+  - apt-transport-https
+  - ca-certificates
+  - gnupg
+  - lsb-release
+  - qemu-guest-agent
+  - fail2ban
+  - ufw
+
+# SSH configuration
+ssh_pwauth: false
+disable_root: true
+ssh_deletekeys: true
+ssh_genkeytypes: [rsa, ecdsa, ed25519]
+
+# NTP
+ntp:
+  enabled: true
+  ntp_client: chrony
+  servers:
+    - 10.0.0.2
+    - 10.0.0.3
+  config:
+    confpath: /etc/chrony/chrony.conf
+    template: |
+      ## template:jinja
+      # pools
+      {% for pool in pools -%}
+      pool {{pool}} iburst
+      {% endfor %}
+
+      # servers
+      server 0.pool.ntp.org iburst
+      server 1.pool.ntp.org iburst
+      server 2.pool.ntp.org iburst
+      server 3.pool.ntp.org iburst
+      {% for server in servers -%}
+      server {{server}} iburst prefer
+      {% endfor %}
+
+      # peers
+      {% for peer in peers -%}
+      peer {{peer}}
+      {% endfor %}
+      
+      # allow
+      {% for cidr in allow -%}
+      allow {{cidr}}
+      {% endfor %}
+      
+      # Local stratum 10 fallback
+      local stratum 10
+      
+      # Allow chrony to adjust frequency more aggressively
+      maxslewrate 500
+      
+      # Increase polling range (reduce jitter once stable)
+      minsources 2
+      
+      driftfile /var/lib/chrony/drift
+      makestep 1.0 3
+      rtcsync
+      logdir /var/log/chrony
+
+# Security hardening
+write_files:
+  - path: /etc/ssh/sshd_config.d/99-cloudinit-hardening.conf
+    content: |
+      Port 22
+      PermitRootLogin no
+      PasswordAuthentication yes
+      PubkeyAuthentication yes
+      AuthorizedKeysFile .ssh/authorized_keys
+      ChallengeResponseAuthentication no
+      UsePAM yes
+      X11Forwarding no
+      PrintMotd no
+      AcceptEnv LANG LC_*
+      Subsystem sftp /usr/lib/openssh/sftp-server
+      MaxAuthTries 3
+      ClientAliveInterval 300
+      ClientAliveCountMax 2
+    permissions: "0644"
+    owner: root:root
+
+  - path: /etc/fail2ban/jail.d/99-cloudinit-hardening.conf
+    content: |
+      [DEFAULT]
+      bantime = 3600
+      findtime = 600
+      maxretry = 3
+
+      [sshd]
+      enabled = true
+      port = ssh
+      filter = sshd
+      logpath = /var/log/auth.log
+      maxretry = 3
+    permissions: "0644"
+    owner: root:root
+
+# System setup and security configuration
+runcmd:
+  # Update group ID for automation user
+  - groupmod -g 9999 automation
+
+  # Enable and configure UFW firewall
+  - ufw --force reset
+  - ufw default deny incoming
+  - ufw default allow outgoing
+  - ufw allow ssh
+  - ufw --force enable
+
+  # Configure and start essential services
+  - systemctl enable qemu-guest-agent
+  - systemctl start qemu-guest-agent
+  - systemctl enable fail2ban
+  - systemctl start fail2ban
+  - systemctl restart ssh
+
+  # System maintenance
+  - apt-get autoremove -y
+  - apt-get autoclean
+
+  # Set up logging
+  - systemctl restart systemd-journald
+
+# Final configuration
+final_message: |
+  Cloud-init setup completed successfully!
+
+# Power management
+power_state:
+  mode: reboot
+  message: "Rebooting after cloud-init setup"
+  timeout: 30

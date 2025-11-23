@@ -1,0 +1,11 @@
+#cloud-config
+
+# User configuration
+users:
+  - name: automation
+    uid: 9999
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    lock_passwd: true
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHf+b9XDvHotGhvBRNq7/tCleXbtoFycfg52vwL4lwq7
