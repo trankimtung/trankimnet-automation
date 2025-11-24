@@ -176,3 +176,9 @@
       echo 'deb [signed-by=/etc/apt/trusted.gpg.d/smallstep.asc] https://packages.smallstep.com/stable/debian debs main' \
       | tee /etc/apt/sources.list.d/smallstep.list
     apt-get update && apt-get -y install step-cli
+
+- name: Install additional useful packages
+  apt:
+    name:
+      - lm-sensors
+    state: present
