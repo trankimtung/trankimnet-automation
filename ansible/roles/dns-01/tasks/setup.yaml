@@ -181,4 +181,5 @@
   apt:
     name:
       - lm-sensors
+      - tailscale
     state: present
