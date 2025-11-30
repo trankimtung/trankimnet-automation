@@ -4,6 +4,9 @@
 
 - name: Install k3s
   ansible.builtin.shell: |
-    curl -sfL https://get.k3s.io | sh -s - server --cluster-init
+    curl -sfL https://get.k3s.io | sh -s - server --cluster-init \
+      --cluster-cidr {{ k3s_cluster_cidr }} \
+      --service-cidr {{ k3s_service_cidr }} \
+      --cluster-dns {{ k3s_cluster_dns }}
   args:
     creates: /etc/rancher/k3s/k3s.yaml
