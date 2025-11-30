@@ -1,0 +1,5 @@
+crds:
+  enabled: true
+ingressShim:
+  defaultIssuerName: private-ca
+  defaultIssuerKind: ClusterIssuer

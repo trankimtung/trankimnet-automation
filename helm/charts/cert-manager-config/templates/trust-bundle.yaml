@@ -1,0 +1,16 @@
+{{- if .Values.trustBundle.enabled }}
+apiVersion: trust.cert-manager.io/v1alpha1
+kind: Bundle
+metadata:
+  name: {{ .Values.trustBundle.name }}
+spec:
+  sources:
+    - useDefaultCAs: {{ .Values.trustBundle.useDefaultCAs }}
+    {{ range .Values.trustBundle.inLines }}
+    - inLine: |-
+{{ . | nindent 8 }}
+    {{ end }}
+  target:
+    configMap:
+      key: "{{ .Values.trustBundle.name }}.pem"
+{{- end }}

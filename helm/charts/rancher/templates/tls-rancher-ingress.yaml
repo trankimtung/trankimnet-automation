@@ -1,0 +1,16 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: tls-rancher-ingress
+  namespace: {{ .Release.Namespace }}
+  labels:
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+spec:
+  secretName: tls-rancher-ingress
+  dnsNames:
+    - {{ .Values.rancher.hostname }}
+  issuerRef:
+    name: private-ca
+    kind: ClusterIssuer
