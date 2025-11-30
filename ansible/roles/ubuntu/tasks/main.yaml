@@ -67,11 +67,11 @@
     mode: '0644'
     backup: yes
 
-- name: Ensure chronyd is enabled and started
+- name: Restart and enable chrony service
   systemd:
-    name: chronyd
-    enabled: true
-    state: started
+    name: chrony
+    state: restarted
+    enabled: yes
 
 - name: Install ufw firewall
   apt:
