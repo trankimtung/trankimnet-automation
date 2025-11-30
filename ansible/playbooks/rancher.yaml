@@ -1,0 +1,7 @@
+- name: Setup Rancher Servers
+  hosts: rancher
+  gather_facts: true
+  become: true
+  roles:
+    - ubuntu
+    - k3s
