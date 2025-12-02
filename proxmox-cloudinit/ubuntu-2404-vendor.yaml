@@ -23,6 +23,7 @@ packages:
   - qemu-guest-agent
   - fail2ban
   - ufw
+  - chrony
 
 # SSH configuration
 ssh_pwauth: false
