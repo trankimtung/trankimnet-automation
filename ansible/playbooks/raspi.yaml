@@ -1,0 +1,6 @@
+- name: Setup Raspberry Pi
+  hosts: raspi
+  gather_facts: true
+  become: true
+  roles:
+    - raspi
