@@ -1,0 +1,31 @@
+- name: Setup tailscale servers
+  hosts: tailscale
+  gather_facts: true
+  become: true
+  roles:
+    - ubuntu
+
+  tasks:
+    - name: Add tailscale package signing key and repository
+      ansible.builtin.shell: |
+        curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/noble.noarmor.gpg | sudo tee /usr/share/keyrings/tailscale-archive-keyring.gpg >/dev/null
+        curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/noble.tailscale-keyring.list | sudo tee /etc/apt/sources.list.d/tailscale.list
+      args:
+        creates: 
+          - /etc/apt/sources.list.d/tailscale.list 
+          - /usr/share/keyrings/tailscale-archive-keyring.gpg
+
+    - name: Install tailscale
+      apt:
+        name: tailscale
+        state: present
+        update_cache: yes
+    
+    - name: Enable ip forwarding for Tailscale
+      ansible.builtin.shell:
+        echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.d/99-tailscale.conf
+        echo 'net.ipv6.conf.all.forwarding = 1' | sudo tee -a /etc/sysctl.d/99-tailscale.conf
+        sudo sysctl -p /etc/sysctl.d/99-tailscale.conf
+        sudo service procps force-reload
+      args:
+        creates: /etc/sysctl.d/99-tailscale.conf
