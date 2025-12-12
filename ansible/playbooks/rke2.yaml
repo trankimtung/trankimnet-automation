@@ -1,0 +1,7 @@
+- name: Setup RKE2 Nodes
+  hosts: rke2
+  gather_facts: true
+  become: true
+  roles:
+    - ubuntu
+    - rke2
