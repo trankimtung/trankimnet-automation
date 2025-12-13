@@ -73,18 +73,6 @@
     state: restarted
     enabled: yes
 
-- name: Install ufw firewall
-  apt:
-    name: ufw
-    state: present
-
-- name: Configure ufw
-  ansible.builtin.shell: |
-    ufw default deny incoming
-    ufw default allow outgoing
-    ufw allow ssh
-    ufw --force enable
-
 - name: Install essential packages
   apt:
     name:
