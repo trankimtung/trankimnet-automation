@@ -107,7 +107,7 @@
     install -m 0755 -d /etc/apt/keyrings
     curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
     chmod a+r /etc/apt/keyrings/docker.asc
-  
+    
     tee /etc/apt/sources.list.d/docker.sources <<'EOF'
       Types: deb
       URIs: https://download.docker.com/linux/debian
@@ -187,6 +187,19 @@
 - name: Enable port forwarding for Tailscale
   ansible.builtin.shell:
     echo 'net.ipv4.ip_forward = 1' | sudo tee /etc/sysctl.d/99-tailscale.conf
+    echo 'net.ipv6.conf.all.forwarding = 1' | sudo tee -a /etc/sysctl.d/99-tailscale.conf
     sudo sysctl -p /etc/sysctl.d/99-tailscale.conf
   args:
     creates: /etc/sysctl.d/99-tailscale.conf
+
+- name: Install networkd-dispatcher
+  apt:
+    name: networkd-dispatcher
+    state: present
+
+- name: Enable UDP GRO forwarding
+  ansible.builtin.shell:
+    echo '#!/bin/sh\n\nethtool -K eth0 rx-udp-gro-forwarding on rx-gro-list off \n' | sudo tee /etc/networkd-dispatcher/routable.d/50-tailscale
+    sudo chmod 755 /etc/networkd-dispatcher/routable.d/50-tailscale
+  args:
+    creates: /etc/networkd-dispatcher/routable.d/50-tailscale

@@ -29,3 +29,10 @@
         sudo service procps force-reload
       args:
         creates: /etc/sysctl.d/99-tailscale.conf
+
+    - name: Enable UDP GRO forwarding
+      ansible.builtin.shell:
+        echo '#!/bin/sh\n\nethtool -K eth0 rx-udp-gro-forwarding on rx-gro-list off \n' | sudo tee /etc/networkd-dispatcher/routable.d/50-tailscale
+        sudo chmod 755 /etc/networkd-dispatcher/routable.d/50-tailscale
+      args:
+          creates: /etc/networkd-dispatcher/routable.d/50-tailscale
