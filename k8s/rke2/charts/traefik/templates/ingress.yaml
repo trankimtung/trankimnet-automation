@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "traefik.fullname" . }}-dashboard
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "traefik.labels" . | nindent 4 }}
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: {{ join "," .Values.traefik.ingressRoute.dashboard.entryPoints }}
+    kubernetes.io/tls-acme: "true"
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: {{ .Values.dashboard.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "traefik.fullname" . }}
+                port:
+                  name: traefik
+  tls:
+    - secretName: {{ include "traefik.fullname" . }}-dashboard-tls
+      hosts:
+        - {{ .Values.dashboard.host }}

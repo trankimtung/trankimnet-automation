@@ -1,0 +1,4 @@
+trust-manager:
+  namespace: trust-manager
+  crds:
+    enabled: true

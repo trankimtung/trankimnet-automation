@@ -1,0 +1,568 @@
+apiVersion: provisioning.cattle.io/v1
+kind: Cluster
+metadata:
+  name: rke2
+  annotations:
+    field.cattle.io/creatorId: user-hgmq6
+    provisioning.cattle.io/management-cluster-display-name: rke2
+    #  key: string
+  creationTimestamp: '2025-12-13T07:03:31Z'
+  finalizers:
+    - wrangler.cattle.io/provisioning-cluster-remove
+    - wrangler.cattle.io/rke-cluster-remove
+    - wrangler.cattle.io/cloud-config-secret-remover
+  #    - string
+  generation: 11
+  labels:
+    {}
+  #  key: string
+  namespace: fleet-default
+  resourceVersion: '6881123'
+  uid: 7462f413-ecd6-4421-96f2-f80aa5037dee
+  fields:
+    - rke2
+    - v1.34.1+rke2r1
+    - c-m-j5p4hhnb
+    - 8h
+    - rke2-kubeconfig
+    - 'true'
+spec:
+  clusterAgentDeploymentCustomization:
+    appendTolerations:
+    #      - effect: string
+    #        key: string
+    #        operator: string
+    #        tolerationSeconds: int
+    #        value: string
+    overrideAffinity:
+    #      nodeAffinity:
+    #        preferredDuringSchedulingIgnoredDuringExecution:
+    #          - preference:
+    #              matchExpressions:
+    #                - key: string
+    #                  operator: string
+    #                  values:
+    #                    - string
+    #              matchFields:
+    #                - key: string
+    #                  operator: string
+    #                  values:
+    #                    - string
+    #            weight: int
+    #        requiredDuringSchedulingIgnoredDuringExecution:
+    #          nodeSelectorTerms:
+    #            - matchExpressions:
+    #                - key: string
+    #                  operator: string
+    #                  values:
+    #                    - string
+    #              matchFields:
+    #                - key: string
+    #                  operator: string
+    #                  values:
+    #                    - string
+    #      podAffinity:
+    #        preferredDuringSchedulingIgnoredDuringExecution:
+    #          - podAffinityTerm:
+    #              labelSelector:
+    #                matchExpressions:
+    #                  - key: string
+    #                    operator: string
+    #                    values:
+    #                      - string
+    #                matchLabels:  key: string
+    #              matchLabelKeys:
+    #                - string
+    #              mismatchLabelKeys:
+    #                - string
+    #              namespaceSelector:
+    #                matchExpressions:
+    #                  - key: string
+    #                    operator: string
+    #                    values:
+    #                      - string
+    #                matchLabels:  key: string
+    #              namespaces:
+    #                - string
+    #              topologyKey: string
+    #            weight: int
+    #        requiredDuringSchedulingIgnoredDuringExecution:
+    #          - labelSelector:
+    #              matchExpressions:
+    #                - key: string
+    #                  operator: string
+    #                  values:
+    #                    - string
+    #              matchLabels:  key: string
+    #            matchLabelKeys:
+    #              - string
+    #            mismatchLabelKeys:
+    #              - string
+    #            namespaceSelector:
+    #              matchExpressions:
+    #                - key: string
+    #                  operator: string
+    #                  values:
+    #                    - string
+    #              matchLabels:  key: string
+    #            namespaces:
+    #              - string
+    #            topologyKey: string
+    #      podAntiAffinity:
+    #        preferredDuringSchedulingIgnoredDuringExecution:
+    #          - podAffinityTerm:
+    #              labelSelector:
+    #                matchExpressions:
+    #                  - key: string
+    #                    operator: string
+    #                    values:
+    #                      - string
+    #                matchLabels:  key: string
+    #              matchLabelKeys:
+    #                - string
+    #              mismatchLabelKeys:
+    #                - string
+    #              namespaceSelector:
+    #                matchExpressions:
+    #                  - key: string
+    #                    operator: string
+    #                    values:
+    #                      - string
+    #                matchLabels:  key: string
+    #              namespaces:
+    #                - string
+    #              topologyKey: string
+    #            weight: int
+    #        requiredDuringSchedulingIgnoredDuringExecution:
+    #          - labelSelector:
+    #              matchExpressions:
+    #                - key: string
+    #                  operator: string
+    #                  values:
+    #                    - string
+    #              matchLabels:  key: string
+    #            matchLabelKeys:
+    #              - string
+    #            mismatchLabelKeys:
+    #              - string
+    #            namespaceSelector:
+    #              matchExpressions:
+    #                - key: string
+    #                  operator: string
+    #                  values:
+    #                    - string
+    #              matchLabels:  key: string
+    #            namespaces:
+    #              - string
+    #            topologyKey: string
+    overrideResourceRequirements:
+  #      claims:
+  #        - name: string
+  #          request: string
+  #      limits:
+  #      requests:
+  #    schedulingCustomization:
+  #      podDisruptionBudget:
+  #        maxUnavailable: string
+  #        minAvailable: string
+  #      priorityClass:
+  #        preemptionPolicy: string
+  #        value: int
+  defaultPodSecurityAdmissionConfigurationTemplateName: rancher-restricted
+  fleetAgentDeploymentCustomization:
+    appendTolerations:
+    #      - effect: string
+    #        key: string
+    #        operator: string
+    #        tolerationSeconds: int
+    #        value: string
+    overrideAffinity:
+    #      nodeAffinity:
+    #        preferredDuringSchedulingIgnoredDuringExecution:
+    #          - preference:
+    #              matchExpressions:
+    #                - key: string
+    #                  operator: string
+    #                  values:
+    #                    - string
+    #              matchFields:
+    #                - key: string
+    #                  operator: string
+    #                  values:
+    #                    - string
+    #            weight: int
+    #        requiredDuringSchedulingIgnoredDuringExecution:
+    #          nodeSelectorTerms:
+    #            - matchExpressions:
+    #                - key: string
+    #                  operator: string
+    #                  values:
+    #                    - string
+    #              matchFields:
+    #                - key: string
+    #                  operator: string
+    #                  values:
+    #                    - string
+    #      podAffinity:
+    #        preferredDuringSchedulingIgnoredDuringExecution:
+    #          - podAffinityTerm:
+    #              labelSelector:
+    #                matchExpressions:
+    #                  - key: string
+    #                    operator: string
+    #                    values:
+    #                      - string
+    #                matchLabels:  key: string
+    #              matchLabelKeys:
+    #                - string
+    #              mismatchLabelKeys:
+    #                - string
+    #              namespaceSelector:
+    #                matchExpressions:
+    #                  - key: string
+    #                    operator: string
+    #                    values:
+    #                      - string
+    #                matchLabels:  key: string
+    #              namespaces:
+    #                - string
+    #              topologyKey: string
+    #            weight: int
+    #        requiredDuringSchedulingIgnoredDuringExecution:
+    #          - labelSelector:
+    #              matchExpressions:
+    #                - key: string
+    #                  operator: string
+    #                  values:
+    #                    - string
+    #              matchLabels:  key: string
+    #            matchLabelKeys:
+    #              - string
+    #            mismatchLabelKeys:
+    #              - string
+    #            namespaceSelector:
+    #              matchExpressions:
+    #                - key: string
+    #                  operator: string
+    #                  values:
+    #                    - string
+    #              matchLabels:  key: string
+    #            namespaces:
+    #              - string
+    #            topologyKey: string
+    #      podAntiAffinity:
+    #        preferredDuringSchedulingIgnoredDuringExecution:
+    #          - podAffinityTerm:
+    #              labelSelector:
+    #                matchExpressions:
+    #                  - key: string
+    #                    operator: string
+    #                    values:
+    #                      - string
+    #                matchLabels:  key: string
+    #              matchLabelKeys:
+    #                - string
+    #              mismatchLabelKeys:
+    #                - string
+    #              namespaceSelector:
+    #                matchExpressions:
+    #                  - key: string
+    #                    operator: string
+    #                    values:
+    #                      - string
+    #                matchLabels:  key: string
+    #              namespaces:
+    #                - string
+    #              topologyKey: string
+    #            weight: int
+    #        requiredDuringSchedulingIgnoredDuringExecution:
+    #          - labelSelector:
+    #              matchExpressions:
+    #                - key: string
+    #                  operator: string
+    #                  values:
+    #                    - string
+    #              matchLabels:  key: string
+    #            matchLabelKeys:
+    #              - string
+    #            mismatchLabelKeys:
+    #              - string
+    #            namespaceSelector:
+    #              matchExpressions:
+    #                - key: string
+    #                  operator: string
+    #                  values:
+    #                    - string
+    #              matchLabels:  key: string
+    #            namespaces:
+    #              - string
+    #            topologyKey: string
+    overrideResourceRequirements:
+  #      claims:
+  #        - name: string
+  #          request: string
+  #      limits:
+  #      requests:
+  #    schedulingCustomization:
+  #      podDisruptionBudget:
+  #        maxUnavailable: string
+  #        minAvailable: string
+  #      priorityClass:
+  #        preemptionPolicy: string
+  #        value: int
+  kubernetesVersion: v1.34.1+rke2r1
+  localClusterAuthEndpoint:
+    enabled: false
+  #    caCerts: string
+  #    fqdn: string
+  rkeConfig:
+    chartValues:
+      rke2-cilium:
+        bgpControlPlane:
+          enabled: true
+        bpf:
+          masquerade: true
+        egressGateway:
+          enabled: true
+        enableIPv4Masquerade: true
+        externalIPs:
+          enabled: true
+        ipam:
+          operator:
+            clusterPoolIPv4PodCIDRList:
+              - 192.168.0.0/20
+        k8sServiceHost: localhost
+        k8sServicePort: '6443'
+        kubeProxyReplacement: true
+        l2announcements:
+          enabled: true
+        nodePort:
+          enabled: true
+        operator:
+          replicas: 1
+          tolerations:
+            - key: node-role.kubernetes.io/control-plane
+              operator: Exists
+            - key: node-role.kubernetes.io/master
+              operator: Exists
+            - key: node-role.kubernetes.io/etcd
+              operator: Exists
+            - key: node.kubernetes.io/not-ready
+              operator: Exists
+        securityContext:
+          capabilities:
+            ciliumAgent:
+              - CHOWN
+              - KILL
+              - NET_ADMIN
+              - NET_RAW
+              - IPC_LOCK
+              - SYS_MODULE
+              - SYS_ADMIN
+              - SYS_RESOURCE
+              - DAC_OVERRIDE
+              - FOWNER
+              - SETGID
+              - SETUID
+              - NET_BIND_SERVICE
+
+    dataDirectories:
+      k8sDistro: ''
+      provisioning: ''
+      systemAgent: ''
+    etcd:
+      disableSnapshots: false
+      snapshotRetention: 5
+      snapshotScheduleCron: 0 */5 * * *
+    #      s3:
+    #        bucket: string
+    #        cloudCredentialName: string
+    #        endpoint: string
+    #        endpointCA: string
+    #        folder: string
+    #        region: string
+    #        skipSSLVerify: boolean
+    machineGlobalConfig:
+      cluster-cidr: 192.168.0.0/20
+      cluster-dns: 192.168.16.10
+      cni: cilium
+      disable:
+        - rke2-ingress-nginx
+      disable-kube-proxy: true
+      etcd-expose-metrics: false
+      kube-apiserver-arg:
+        - admission-control-config-file=/etc/rancher/rke2/config/rancher-psact.yaml
+      service-cidr: 192.168.16.0/20
+      service-node-port-range: 30000-32767
+
+    machinePoolDefaults:
+    #      hostnameLengthLimit: int
+    machinePools:
+    #      - autoscalingMaxSize: int
+    #        autoscalingMinSize: int
+    #        cloudCredentialSecretName: string
+    #        controlPlaneRole: boolean
+    #        displayName: string
+    #        drainBeforeDelete: boolean
+    #        drainBeforeDeleteTimeout: string
+    #        dynamicSchemaSpec: string
+    #        etcdRole: boolean
+    #        hostnameLengthLimit: int
+    #        labels:  key: string
+    #        machineConfigRef:
+    #          apiVersion: string
+    #          fieldPath: string
+    #          kind: string
+    #          name: string
+    #          namespace: string
+    #          resourceVersion: string
+    #          uid: string
+    #        machineDeploymentAnnotations:  key: string
+    #        machineDeploymentLabels:  key: string
+    #        machineOS: string
+    #        maxUnhealthy: string
+    #        name: string
+    #        nodeStartupTimeout: string
+    #        paused: boolean
+    #        quantity: int
+    #        rollingUpdate:
+    #          maxSurge:
+    #          maxUnavailable:
+    #        taints:
+    #          - effect: string
+    #            key: string
+    #            timeAdded: string
+    #            value: string
+    #        unhealthyNodeTimeout: string
+    #        unhealthyRange: string
+    #        workerRole: boolean
+    machineSelectorConfig:
+      - config:
+          profile: cis
+          protect-kernel-defaults: true
+    #      - config:
+    #        machineLabelSelector:
+    #          matchExpressions:
+    #            - key: string
+    #              operator: string
+    #              values:
+    #                - string
+    #          matchLabels:  key: string
+    machineSelectorFiles:
+      - fileSources:
+          - configMap:
+              name: ''
+            secret:
+              items:
+                - hash: u9+jBuFoAndYNKDlvLYLLHgdBEd56gMpJrUJWYMLKZU=
+                  key: admission-config-psact
+                  path: /etc/rancher/rke2/config/rancher-psact.yaml
+              name: rke2-admission-configuration-psact
+        machineLabelSelector:
+          matchLabels:
+            rke.cattle.io/control-plane-role: 'true'
+    #      - fileSources:
+    #          - configMap:
+    #              defaultPermissions: string
+    #              items:
+    #                - dynamic: boolean
+    #                  hash: string
+    #                  key: string
+    #                  path: string
+    #                  permissions: string
+    #              name: string
+    #            secret:
+    #              defaultPermissions: string
+    #              items:
+    #                - dynamic: boolean
+    #                  hash: string
+    #                  key: string
+    #                  path: string
+    #                  permissions: string
+    #              name: string
+    #        machineLabelSelector:
+    #          matchExpressions:
+    #            - key: string
+    #              operator: string
+    #              values:
+    #                - string
+    #          matchLabels:  key: string
+    networking:
+    #      stackPreference: string
+    registries:
+      configs:
+        {}
+      #  authConfigSecretName: string
+      #        caBundle: string
+      #        insecureSkipVerify: boolean
+      #        tlsSecretName: string
+      mirrors:
+        {}
+      #  endpoint:
+    #          - string
+    #        rewrite:  key: string
+    upgradeStrategy:
+      controlPlaneConcurrency: '1'
+      controlPlaneDrainOptions:
+        deleteEmptyDirData: true
+        disableEviction: false
+        enabled: false
+        force: false
+        gracePeriod: -1
+        ignoreDaemonSets: true
+        skipWaitForDeleteTimeoutSeconds: 0
+        timeout: 120
+      #        ignoreErrors: boolean
+      #        postDrainHooks:
+      #          - annotation: string
+      #        preDrainHooks:
+      #          - annotation: string
+      workerConcurrency: '1'
+      workerDrainOptions:
+        deleteEmptyDirData: true
+        disableEviction: false
+        enabled: false
+        force: false
+        gracePeriod: -1
+        ignoreDaemonSets: true
+        skipWaitForDeleteTimeoutSeconds: 0
+        timeout: 120
+  #        ignoreErrors: boolean
+  #        postDrainHooks:
+  #          - annotation: string
+  #        preDrainHooks:
+  #          - annotation: string
+  #    additionalManifest: string
+  #    etcdSnapshotCreate:
+  #      generation: int
+  #    etcdSnapshotRestore:
+  #      generation: int
+  #      name: string
+  #      restoreRKEConfig: string
+  #    infrastructureRef:
+  #      apiVersion: string
+  #      fieldPath: string
+  #      kind: string
+  #      name: string
+  #      namespace: string
+  #      resourceVersion: string
+  #      uid: string
+  #    provisionGeneration: int
+  #    rotateCertificates:
+  #      generation: int
+  #      services:
+  #        - string
+  #    rotateEncryptionKeys:
+  #      generation: int
+  machineSelectorConfig:
+    - config: {}
+#  agentEnvVars:
+#    - name: string
+#      value: string
+#  cloudCredentialSecretName: string
+#  clusterAPIConfig:
+#    clusterName: string
+#  defaultClusterRoleForProjectMembers: string
+#  enableNetworkPolicy: boolean
+#  redeploySystemAgentGeneration: int
+__clone: true
