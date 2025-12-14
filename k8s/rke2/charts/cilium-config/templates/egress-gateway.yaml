@@ -1,0 +1,21 @@
+apiVersion: cilium.io/v2
+kind: CiliumEgressGatewayPolicy
+metadata:
+  name: default
+spec:
+  selectors:
+    - podSelector:
+        matchLabels:
+          node-role.kubernetes.io/control-plane: "true"
+  destinationCIDRs:
+    - 0.0.0.0/0
+  egressGateway:
+    nodeSelector:
+      matchLabels:
+        node-role.kubernetes.io/control-plane: "true"
+    interface: eth0
+  egressGateways:
+    - nodeSelector:
+        matchLabels:
+          node-role.kubernetes.io/control-plane: "true"
+      interface: eth0

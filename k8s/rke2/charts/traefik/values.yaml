@@ -1,0 +1,27 @@
+traefik:
+
+  ports:
+    web:
+      port: 80
+    websecure:
+      port: 443
+
+  rbac:
+    enabled: true
+
+  securityContext:
+    seccompProfile:
+      type: RuntimeDefault
+
+  providers:
+    kubernetesIngress:
+      enabled: true
+
+  logs:
+    general:
+      level: INFO
+
+  api: { }
+
+  deployment:
+    replicas: 3

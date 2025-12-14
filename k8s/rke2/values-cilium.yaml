@@ -121,7 +121,7 @@ bandwidthManager:
   bbrHostNamespaceOnly: false
   enabled: false
 bgpControlPlane:
-  enabled: false
+  enabled: true
   routerIDAllocation:
     ipPool: ''
     mode: default

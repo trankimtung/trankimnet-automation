@@ -1,0 +1,58 @@
+apiVersion: cilium.io/v2
+kind: CiliumBGPClusterConfig
+metadata:
+  name: cilium-bgp
+spec:
+  nodeSelector:
+    matchLabels:
+      node-role.kubernetes.io/control-plane: 'true'
+  bgpInstances:
+    - name: "65100"
+      localASN: 65100
+      localPort: 179
+      peers:
+        - name: "tor-switch"
+          peerASN: 65000
+          autoDiscovery:
+            mode: "DefaultGateway"
+            defaultGateway:
+              addressFamily: ipv4
+          peerConfigRef:
+            name: "cilium-peer"
+---
+apiVersion: cilium.io/v2
+kind: CiliumBGPPeerConfig
+metadata:
+  name: cilium-peer
+spec:
+  timers:
+    holdTimeSeconds: 9
+    keepAliveTimeSeconds: 3
+  authSecretRef: bgp-auth-secret
+  ebgpMultihop: 4
+  gracefulRestart:
+    enabled: true
+    restartTimeSeconds: 15
+  families:
+    - afi: ipv4
+      safi: unicast
+      advertisements:
+        matchLabels:
+          advertise: "bgp"
+---
+apiVersion: cilium.io/v2
+kind: CiliumBGPAdvertisement
+metadata:
+  name: bgp-advertisements
+  labels:
+    advertise: bgp
+spec:
+  advertisements:
+    - advertisementType: "Service"
+      service:
+        addresses:
+          - ExternalIP
+          - LoadBalancerIP
+      selector:
+        matchExpressions:
+          - { key: bgp, operator: NotIn, values: [ blue ] }

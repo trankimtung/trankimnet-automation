@@ -1,0 +1,11 @@
+cert-manager:
+  namespace: cert-manager
+  crds:
+    enabled: true
+  ingressShim:
+    defaultIssuerName: private-ca
+    defaultIssuerKind: ClusterIssuer
+
+trust-manager:
+  crds:
+    enabled: true
