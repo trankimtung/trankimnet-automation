@@ -1,5 +1,5 @@
 rancher:
-  hostname: rancher.home.trankim.net
+  hostname: rancher.tung.trankim.net
   ingress:
     tls:
       source: secret
