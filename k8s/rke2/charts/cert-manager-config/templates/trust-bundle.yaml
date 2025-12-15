@@ -1,7 +1,7 @@
 apiVersion: trust.cert-manager.io/v1alpha1
 kind: Bundle
 metadata:
-  name: trust-bundle
+  name: ca-certificates
 spec:
   sources:
     - useDefaultCAs: true
@@ -20,4 +20,4 @@ spec:
         -----END CERTIFICATE-----
   target:
     configMap:
-      key: "trust-bundle.pem"
+      key: "ca-certificates.crt"
