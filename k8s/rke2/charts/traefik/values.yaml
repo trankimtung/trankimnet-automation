@@ -16,6 +16,7 @@ traefik:
   providers:
     kubernetesIngress:
       enabled: true
+      allowExternalNameServices: true
 
   logs:
     general:
@@ -24,14 +25,4 @@ traefik:
   api: { }
 
   deployment:
-    replicas: 3
-
-  volumes:
-    - name: trust-bundle
-      configMap:
-        name: trust-bundle
-      mountPath: /trust-bundle
-
-  env:
-    - name: SSL_CERT_FILE
-      value: /trust-bundle/trust-bundle.pem
+    replicas: 1
