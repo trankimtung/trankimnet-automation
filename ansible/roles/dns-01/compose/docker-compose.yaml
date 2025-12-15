@@ -7,12 +7,13 @@ services:
     image: pihole/pihole:latest
     hostname: dns-01
     ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-      - "5380:5380"
-      - "5343:5343"
+      - "10.0.0.2:53:53/tcp"
+      - "10.0.0.2:53:53/udp"
+      - "10.0.0.2:5380:5380"
+      - "10.0.0.2:5343:5343"
     networks:
-      - backend
+      backend:
+        ipv4_address: 172.18.0.4
     dns:
       - 1.1.1.1
       - 1.0.0.1
@@ -40,7 +41,8 @@ services:
     hostname: unbound
     image: trankimtung/unbound:latest
     networks:
-      - backend
+      backend:
+        ipv4_address: 172.18.0.2
     restart: unless-stopped
 
   step-ca:
@@ -49,15 +51,33 @@ services:
     hostname: dns-01
     user: "1002:1002"
     ports:
-      - "443:443"
+      - "10.0.0.4:443:443"
     volumes:
       - /home/ca:/home/step
     networks:
       - backend
     dns:
+      - 172.18.0.4
       - 10.0.0.2
       - 10.0.0.3
     restart: unless-stopped
+
+  caddy:
+    image: caddy:latest
+    container_name: caddy
+    hostname: caddy
+    ports:
+      - "10.0.0.2:80:80"
+      - "10.0.0.2:443:443"
+    volumes:
+      - /opt/dns-01/compose/Caddyfile:/etc/caddy/Caddyfile
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+    networks:
+      - backend
+    dns:
+      - 172.18.0.4
+      - 10.0.0.2
+      - 10.0.0.3
 
   node-exporter:
     image: prom/node-exporter:latest
@@ -83,3 +103,7 @@ volumes:
 networks:
   backend:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/24
+          gateway: 172.18.0.1

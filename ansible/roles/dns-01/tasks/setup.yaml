@@ -18,6 +18,7 @@
             dhcp4: false
             addresses:
               - 10.0.0.2/24
+              - 10.0.0.4/24
             routes:
               - to: default
                 via: 10.0.0.1
@@ -29,6 +30,9 @@
     owner: root
     group: root
     mode: '0600'
+
+- name: Apply netplan configuration
+  command: netplan apply
 
 - name: Install chrony for NTP synchronization
   apt:
