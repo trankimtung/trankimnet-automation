@@ -1,0 +1,6 @@
+dns-02.tung.trankim.net {
+  reverse_proxy pi-hole:5380
+  tls {
+    ca https://ca.tung.trankim.net/acme/acme/directory
+  }
+}

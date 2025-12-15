@@ -12,7 +12,8 @@ services:
       - "5380:5380"
       - "5343:5343"
     networks:
-      - backend
+      backend:
+        ipv4_address: 172.19.0.2
     dns:
       - 1.1.1.1
       - 1.0.0.1
@@ -40,8 +41,27 @@ services:
     hostname: unbound
     image: trankimtung/unbound:latest
     networks:
-      - backend
+      backend:
+        ipv4_address: 172.19.0.3
     restart: unless-stopped
+
+  caddy:
+    image: caddy:latest
+    container_name: caddy
+    hostname: caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /opt/dns-02/compose/Caddyfile:/etc/caddy/Caddyfile
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+    networks:
+      backend:
+        ipv4_address: 172.19.0.4
+    dns:
+      - 172.19.0.2
+      - 10.0.0.2
+      - 10.0.0.3
 
   nebula-sync:
     image: ghcr.io/lovelaze/nebula-sync:latest
@@ -53,12 +73,19 @@ services:
       - FULL_SYNC=true
       - RUN_GRAVITY=true
       - CRON=*/3 * * * *
-      - CLIENT_SKIP_TLS_VERIFICATION=true
+      - CLIENT_SKIP_TLS_VERIFICATION=false
     secrets:
       - dns_primary
       - dns_replicas
+    volumes:
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
     networks:
-      - backend
+      backend:
+        ipv4_address: 172.19.0.5
+    dns:
+      - 172.19.0.2
+      - 10.0.0.2
+      - 10.0.0.3
     restart: unless-stopped
 
   node-exporter:
@@ -85,6 +112,10 @@ volumes:
 networks:
   backend:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.19.0.0/24
+          gateway: 172.19.0.1
 
 secrets:
   dns_primary:
