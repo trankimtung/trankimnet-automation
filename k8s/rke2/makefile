@@ -11,3 +11,6 @@ install-core-config:
 	@echo "Installing core config..."
 	helm upgrade -i cilium-config ./charts/cilium-config -n kube-system
 	helm upgrade -i cert-manager-config ./charts/cert-manager-config -n cert-manager
+
+install-ingresses:
+	helm upgrade -i external-svc-ingress ./charts/external-svc-ingress -n external-svc-ingress --create-namespace
