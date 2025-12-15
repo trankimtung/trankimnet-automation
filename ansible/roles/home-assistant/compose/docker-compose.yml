@@ -1,0 +1,77 @@
+name: home-assistant
+
+services:
+
+  home-assistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: home-assistant
+    hostname: home-assistant
+    depends_on:
+      - zigbee2mqtt
+    restart: unless-stopped
+    volumes:
+      - /var/lib/home-assistant:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+    environment:
+      - TZ=${TZ:-UTC}
+    networks:
+      - backend
+
+  mqtt:
+    image: eclipse-mosquitto:2
+    container_name: mqtt
+    hostname: mqtt
+    user: "1001:1001"
+    restart: unless-stopped
+    volumes:
+      - ./mosquitto/config:/mosquitto/config:ro
+      - /var/lib/mosquitto:/mosquitto/data
+      - /var/log/mosquitto:/mosquitto/log
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+    environment:
+      - TZ=${TZ:-UTC}
+    networks:
+      - backend
+
+  zigbee2mqtt:
+    image: koenkk/zigbee2mqtt
+    container_name: zigbee2mqtt
+    hostname: zigbee2mqtt
+    user: "1001:1001"
+    depends_on:
+      - mqtt
+    restart: unless-stopped
+    volumes:
+      - /var/lib/zigbee2mqtt:/app/data
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+    environment:
+      - TZ=${TZ:-UTC}
+      - ZIGBEE2MQTT_CONFIG_MQTT_SERVER=mqtt://mqtt:1883
+      - ZIGBEE2MQTT_CONFIG_SERIAL_PORT=tcp://10.0.2.10:6638
+      - ZIGBEE2MQTT_CONFIG_SERIAL_ADAPTER=ember
+      - ZIGBEE2MQTT_CONFIG_SERIAL_BAUDRATE=115200
+      - ZIGBEE2MQTT_CONFIG_SERIAL_RTSCTS=false
+      - ZIGBEE2MQTT_CONFIG_FRONTEND_ENABLED=true
+      - ZIGBEE2MQTT_CONFIG_FRONTEND_PORT=8080
+      - ZIGBEE2MQTT_CONFIG_HOMEASSISTANT_ENABLED=true
+    networks:
+      - backend
+
+  caddy:
+    image: caddy:2.8-alpine
+    container_name: caddy
+    hostname: caddy
+    restart: unless-stopped
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge

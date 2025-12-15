@@ -95,6 +95,6 @@
 
 - name: Trust private CA certificate
   ansible.builtin.shell: |
-    step ca bootstrap --ca-url https://ca.home.trankim.net --fingerprint d9fd2e6af8e00a2d06c066e0862ff449185b54c4bb1f76dff82bc1ecebeb7f56 --install
+    step ca bootstrap --ca-url https://ca.tung.trankim.net --fingerprint d9fd2e6af8e00a2d06c066e0862ff449185b54c4bb1f76dff82bc1ecebeb7f56 --install
   args:
     creates: /usr/local/share/ca-certificates/Tran_Kim_Network_Root_CA_*.crt

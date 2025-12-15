@@ -1,0 +1,13 @@
+home-assistant.dev.tung.trankim.net {
+  reverse_proxy home-assistant:8123
+  tls {
+    ca https://ca.tung.trankim.net/acme/acme/directory
+  }
+}
+
+z2m.dev.tung.trankim.net {
+  reverse_proxy zigbee2mqtt:8080
+  tls {
+    ca https://ca.tung.trankim.net/acme/acme/directory
+  }
+}

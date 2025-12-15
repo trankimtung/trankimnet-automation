@@ -1,0 +1,87 @@
+- name: Create home-assistant group
+  group:
+    name: home-assistant
+    gid: 1001
+    system: no
+
+- name: Create home-assistant user
+  user:
+    name: home-assistant
+    uid: 1001
+    group: home-assistant
+    create_home: yes
+    shell: /usr/sbin/nologin
+    system: no
+
+- name: Create data directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: home-assistant
+    group: home-assistant
+    mode: '0755'
+  loop:
+    - /var/lib/home-assistant
+    - /var/lib/mosquitto
+    - /var/log/mosquitto
+    - /var/lib/zigbee2mqtt
+
+- name: Deploy docker compose templates
+  copy:
+    src: ../compose
+    dest: /opt/home-assistant
+    owner: root
+    group: root
+    mode: '0644'
+
+
+- name: Deploy Home Assistant configuration
+  copy:
+    src: ../compose/homeassistant/configuration.yaml
+    dest: /var/lib/home-assistant/configuration.yaml
+    owner: home-assistant
+    group: home-assistant
+    mode: '0644'
+
+- name: Install avahi-daemon for mDNS forwarding
+  apt:
+    name:
+      - avahi-daemon
+      - avahi-utils
+    state: present
+
+- name: Configure avahi-daemon for mDNS forwarding between eth0 and docker0
+  copy:
+    content: |
+      [server]
+      # allow-interfaces=eth0,docker0
+      
+      [reflector]
+      enable-reflector=yes
+    dest: /etc/avahi/avahi-daemon.conf
+    owner: root
+    group: root
+    mode: '0644'
+    backup: yes
+
+- name: Enable and start avahi-daemon service
+  systemd:
+    name: avahi-daemon
+    enabled: true
+    state: started
+
+- name: Enable and start Docker service
+  systemd:
+    name: docker
+    enabled: true
+    state: started
+
+- name: Ensure Docker is running
+  ansible.builtin.command: docker info
+  register: docker_info
+  changed_when: false
+
+- name: Start Home Assistant
+  ansible.builtin.shell: docker compose up -d
+  args:
+    chdir: /opt/home-assistant/compose
