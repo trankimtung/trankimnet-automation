@@ -2,3 +2,5 @@ trust-manager:
   namespace: trust-manager
   crds:
     enabled: true
+  secretTargets:
+    enabled: true
