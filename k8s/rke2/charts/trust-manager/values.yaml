@@ -3,4 +3,4 @@ trust-manager:
   crds:
     enabled: true
   secretTargets:
-    enabled: true
+    enabled: false
