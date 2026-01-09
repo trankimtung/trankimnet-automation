@@ -14,3 +14,7 @@ install-core-config:
 
 install-ingresses:
 	helm upgrade -i external-svc-ingress ./charts/external-svc-ingress -n external-svc-ingress --create-namespace
+
+router-update-frr:
+	systemctl status frr
+	vtysh -c 'show ip route'
