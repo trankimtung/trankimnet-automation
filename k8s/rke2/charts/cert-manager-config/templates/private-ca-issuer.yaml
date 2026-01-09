@@ -4,8 +4,8 @@ metadata:
   name: private-ca
 spec:
   acme:
-    server: https://ca.home.trankim.net/acme/acme/directory
-    email: cert-manager@home.trankim.net
+    server: https://ca.tung.trankim.net/acme/acme/directory
+    email: cert-manager@tung.trankim.net
     privateKeySecretRef:
       name: private-ca-secret
     solvers:
