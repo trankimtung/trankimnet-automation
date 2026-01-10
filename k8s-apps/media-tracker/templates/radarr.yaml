@@ -1,0 +1,130 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "media-tracker.fullname" . }}-radarr
+  labels:
+    {{- include "media-tracker.labels" . | nindent 4 }}
+    app.kubernetes.io/component: radarr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "media-tracker.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: radarr
+  template:
+    metadata:
+      labels:
+        {{- include "media-tracker.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: radarr
+    spec:
+      containers:
+        - name: radarr
+          image: "{{ .Values.radarr.image.repository }}:{{ .Values.radarr.image.tag }}"
+          imagePullPolicy: {{ .Values.radarr.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: PUID
+              value: "{{ .Values.uid }}"
+            - name: PGID
+              value: "{{ .Values.gid }}"
+            - name: TZ
+              value: "{{ .Values.timezone }}"
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: media
+              mountPath: /media
+          resources:
+            {{- toYaml .Values.radarr.resources | nindent 12 }}
+          securityContext:
+            seccompProfile:
+              type: RuntimeDefault
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: {{ include "media-tracker.fullname" . }}-radarr-config
+        - name: media
+          persistentVolumeClaim:
+            claimName: {{ include "media-tracker.fullname" . }}-media
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "media-tracker.fullname" . }}-radarr-config
+  labels:
+    {{- include "media-tracker.labels" . | nindent 4 }}
+    app.kubernetes.io/component: radarr
+spec:
+  accessModes:
+    - {{ .Values.radarr.persistence.config.accessMode | default "ReadWriteOnce" }}
+  resources:
+    requests:
+      storage: {{ .Values.radarr.persistence.config.size | default "1Gi" }}
+  {{- if .Values.radarr.persistence.config.storageClass }}
+  storageClassName: {{ .Values.radarr.persistence.config.storageClass }}
+  {{- end }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "media-tracker.fullname" . }}-media
+  labels:
+    {{- include "media-tracker.labels" . | nindent 4 }}
+    app.kubernetes.io/component: radarr
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2048Gi
+  volumeMode: Filesystem
+  volumeName: {{ include "media-tracker.fullname" . }}-media
+  storageClassName: nfs
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: radarr
+  labels:
+    {{- include "media-tracker.labels" . | nindent 4 }}
+    app.kubernetes.io/component: radarr
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: 7878
+      protocol: TCP
+  selector:
+    {{- include "media-tracker.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: radarr
+    app.kubernetes.io/instance: {{ .Release.Name }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: radarr
+  labels:
+    {{- include "media-tracker.labels" . | nindent 4 }}
+    app.kubernetes.io/component: radarr
+  annotations:
+    kubernetes.io/tls-acme: "true"
+spec:
+  tls:
+    - hosts:
+        - {{ .Values.radarr.ingress.domain }}
+      secretName: {{ include "media-tracker.fullname" . }}-radarr-tls
+  rules:
+    - host: {{ .Values.radarr.ingress.domain }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: radarr
+                port:
+                  name: http

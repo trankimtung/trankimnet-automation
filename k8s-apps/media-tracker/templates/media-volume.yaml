@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "media-tracker.fullname" . }}-media
+  labels:
+    {{- include "media-tracker.labels" . | nindent 4 }}
+    app.kubernetes.io/component: media-tracker
+spec:
+  capacity:
+    storage: 2048Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: {{ .Values.nfs.server }}
+    path: {{ .Values.nfs.path }}
+  storageClassName: nfs

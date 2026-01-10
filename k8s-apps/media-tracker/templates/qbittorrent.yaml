@@ -1,0 +1,146 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "media-tracker.fullname" . }}-qbittorrent
+  labels:
+    {{- include "media-tracker.labels" . | nindent 4 }}
+    app.kubernetes.io/component: qbittorrent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "media-tracker.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: qbittorrent
+  template:
+    metadata:
+      labels:
+        {{- include "media-tracker.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: qbittorrent
+    spec:
+      containers:
+        - name: qbittorrent
+          image: "{{ .Values.qbittorrent.image.repository }}:{{ .Values.qbittorrent.image.tag }}"
+          imagePullPolicy: {{ .Values.qbittorrent.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+            - name: torrent
+              containerPort: 63258
+              protocol: TCP
+            - name: torrent-udp
+              containerPort: 63258
+              protocol: UDP
+          env:
+            - name: PUID
+              value: "{{ .Values.uid }}"
+            - name: PGID
+              value: "{{ .Values.gid }}"
+            - name: TZ
+              value: "{{ .Values.timezone }}"
+            - name: WEBUI_PORT
+              value: "80"
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: media
+              mountPath: /media
+          resources:
+            {{- toYaml .Values.qbittorrent.resources | nindent 12 }}
+          securityContext:
+            seccompProfile:
+              type: RuntimeDefault
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: {{ include "media-tracker.fullname" . }}-qbittorrent-config
+        - name: media
+          persistentVolumeClaim:
+            claimName: {{ include "media-tracker.fullname" . }}-media
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "media-tracker.fullname" . }}-qbittorrent-config
+  labels:
+    {{- include "media-tracker.labels" . | nindent 4 }}
+    app.kubernetes.io/component: qbittorrent
+spec:
+  accessModes:
+    - {{ .Values.qbittorrent.persistence.config.accessMode | default "ReadWriteOnce" }}
+  resources:
+    requests:
+      storage: {{ .Values.qbittorrent.persistence.config.size | default "1Gi" }}
+  {{- if .Values.qbittorrent.persistence.config.storageClass }}
+  storageClassName: {{ .Values.qbittorrent.persistence.config.storageClass }}
+  {{- end }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "media-tracker.fullname" . }}-media
+  labels:
+    {{- include "media-tracker.labels" . | nindent 4 }}
+    app.kubernetes.io/component: qbittorrent
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2048Gi
+  volumeMode: Filesystem
+  volumeName: {{ include "media-tracker.fullname" . }}-media
+  storageClassName: nfs
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qbittorrent
+  labels:
+    {{- include "media-tracker.labels" . | nindent 4 }}
+    app.kubernetes.io/component: qbittorrent
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+    - name: torrent
+      port: 63258
+      targetPort: torrent
+      protocol: TCP
+    - name: torrent-udp
+      port: 63258
+      targetPort: torrent-udp
+      protocol: UDP
+  selector:
+    {{- include "media-tracker.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: qbittorrent
+    app.kubernetes.io/instance: {{ .Release.Name }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: qbittorrent
+  labels:
+    {{- include "media-tracker.labels" . | nindent 4 }}
+    app.kubernetes.io/component: qbittorrent
+  annotations:
+    kubernetes.io/tls-acme: "true"
+spec:
+  tls:
+    - hosts:
+        - {{ .Values.qbittorrent.ingress.domain }}
+      secretName: {{ include "media-tracker.fullname" . }}-qbittorrent-tls
+  rules:
+    - host: {{ .Values.qbittorrent.ingress.domain }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: qbittorrent
+                port:
+                  name: http

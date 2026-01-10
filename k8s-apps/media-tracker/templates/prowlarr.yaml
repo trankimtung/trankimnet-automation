@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "media-tracker.fullname" . }}-prowlarr
+  labels:
+    {{- include "media-tracker.labels" . | nindent 4 }}
+    app.kubernetes.io/component: prowlarr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "media-tracker.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: prowlarr
+  template:
+    metadata:
+      labels:
+        {{- include "media-tracker.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: prowlarr
+    spec:
+      containers:
+        - name: prowlarr
+          image: "{{ .Values.prowlarr.image.repository }}:{{ .Values.prowlarr.image.tag }}"
+          imagePullPolicy: {{ .Values.prowlarr.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: PUID
+              value: "{{ .Values.uid }}"
+            - name: PGID
+              value: "{{ .Values.gid }}"
+            - name: TZ
+              value: "{{ .Values.timezone }}"
+          volumeMounts:
+            - name: config
+              mountPath: /config
+          resources:
+            {{- toYaml .Values.prowlarr.resources | nindent 12 }}
+          securityContext:
+            seccompProfile:
+              type: RuntimeDefault
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: {{ include "media-tracker.fullname" . }}-prowlarr-config
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "media-tracker.fullname" . }}-prowlarr-config
+  labels:
+    {{- include "media-tracker.labels" . | nindent 4 }}
+    app.kubernetes.io/component: prowlarr
+spec:
+  accessModes:
+    - {{ .Values.prowlarr.persistence.config.accessMode | default "ReadWriteOnce" }}
+  resources:
+    requests:
+      storage: {{ .Values.prowlarr.persistence.config.size | default "1Gi" }}
+  {{- if .Values.prowlarr.persistence.config.storageClass }}
+  storageClassName: {{ .Values.prowlarr.persistence.config.storageClass }}
+  {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prowlarr
+  labels:
+    {{- include "media-tracker.labels" . | nindent 4 }}
+    app.kubernetes.io/component: prowlarr
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: 9696
+      protocol: TCP
+  selector:
+    {{- include "media-tracker.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: prowlarr
+    app.kubernetes.io/instance: {{ .Release.Name }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: prowlarr
+  labels:
+    {{- include "media-tracker.labels" . | nindent 4 }}
+    app.kubernetes.io/component: prowlarr
+  annotations:
+    kubernetes.io/tls-acme: "true"
+spec:
+  tls:
+    - hosts:
+        - {{ .Values.prowlarr.ingress.domain }}
+      secretName: {{ include "media-tracker.fullname" . }}-prowlarr-tls
+  rules:
+    - host: {{ .Values.prowlarr.ingress.domain }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: prowlarr
+                port:
+                  name: http

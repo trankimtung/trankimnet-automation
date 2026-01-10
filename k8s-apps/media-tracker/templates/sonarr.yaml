@@ -1,0 +1,130 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "media-tracker.fullname" . }}-sonarr
+  labels:
+    {{- include "media-tracker.labels" . | nindent 4 }}
+    app.kubernetes.io/component: sonarr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "media-tracker.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: sonarr
+  template:
+    metadata:
+      labels:
+        {{- include "media-tracker.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: sonarr
+    spec:
+      containers:
+        - name: sonarr
+          image: "{{ .Values.sonarr.image.repository }}:{{ .Values.sonarr.image.tag }}"
+          imagePullPolicy: {{ .Values.sonarr.image.pullPolicy }}
+          ports:
+            - name: sonarr
+              containerPort: 8989
+              protocol: TCP
+          env:
+            - name: PUID
+              value: "{{ .Values.uid }}"
+            - name: PGID
+              value: "{{ .Values.gid }}"
+            - name: TZ
+              value: "{{ .Values.timezone }}"
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: media
+              mountPath: /media
+          resources:
+            {{- toYaml .Values.sonarr.resources | nindent 12 }}
+          securityContext:
+            seccompProfile:
+              type: RuntimeDefault
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: {{ include "media-tracker.fullname" . }}-sonarr-config
+        - name: media
+          persistentVolumeClaim:
+            claimName: {{ include "media-tracker.fullname" . }}-media
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "media-tracker.fullname" . }}-sonarr-config
+  labels:
+    {{- include "media-tracker.labels" . | nindent 4 }}
+    app.kubernetes.io/component: sonarr
+spec:
+  accessModes:
+    - {{ .Values.sonarr.persistence.config.accessMode | default "ReadWriteOnce" }}
+  resources:
+    requests:
+      storage: {{ .Values.sonarr.persistence.config.size | default "1Gi" }}
+  {{- if .Values.sonarr.persistence.config.storageClass }}
+  storageClassName: {{ .Values.sonarr.persistence.config.storageClass }}
+  {{- end }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "media-tracker.fullname" . }}-media
+  labels:
+    {{- include "media-tracker.labels" . | nindent 4 }}
+    app.kubernetes.io/component: sonarr
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2048Gi
+  volumeMode: Filesystem
+  volumeName: {{ include "media-tracker.fullname" . }}-media
+  storageClassName: nfs
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sonarr
+  labels:
+    {{- include "media-tracker.labels" . | nindent 4 }}
+    app.kubernetes.io/component: sonarr
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: sonarr
+      protocol: TCP
+  selector:
+    {{- include "media-tracker.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: sonarr
+    app.kubernetes.io/instance: {{ .Release.Name }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sonarr
+  labels:
+    {{- include "media-tracker.labels" . | nindent 4 }}
+    app.kubernetes.io/component: sonarr
+  annotations:
+    kubernetes.io/tls-acme: "true"
+spec:
+  tls:
+    - hosts:
+        - {{ .Values.sonarr.ingress.domain }}
+      secretName: {{ include "media-tracker.fullname" . }}-sonarr-tls
+  rules:
+    - host: {{ .Values.sonarr.ingress.domain }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sonarr
+                port:
+                  name: http

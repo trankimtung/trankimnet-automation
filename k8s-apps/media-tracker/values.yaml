@@ -1,0 +1,83 @@
+uid: 1001
+gid: 1001
+timezone: Asia/Singapore
+
+qbittorrent:
+  image:
+    repository: ghcr.io/linuxserver/qbittorrent
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  resources:
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+    requests:
+      cpu: "250m"
+      memory: "256Mi"
+  persistence:
+    config:
+      size: 1Gi
+      accessMode: ReadWriteOnce
+  ingress:
+    domain: qbittorrent.tung.trankim.net
+
+radarr:
+  image:
+    repository: ghcr.io/linuxserver/radarr
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  resources:
+    limits:
+      cpu: "500m"
+      memory: "1Gi"
+    requests:
+      cpu: "250m"
+      memory: "256Mi"
+  persistence:
+    config:
+      size: 2Gi
+      accessMode: ReadWriteOnce
+  ingress:
+    domain: radarr.tung.trankim.net
+
+sonarr:
+  image:
+    repository: ghcr.io/linuxserver/sonarr
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  resources:
+    limits:
+      cpu: "500m"
+      memory: "1Gi"
+    requests:
+      cpu: "250m"
+      memory: "256Mi"
+  persistence:
+    config:
+      size: 2Gi
+      accessMode: ReadWriteOnce
+  ingress:
+    domain: sonarr.tung.trankim.net
+
+prowlarr:
+  image:
+    repository: ghcr.io/linuxserver/prowlarr
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  resources:
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+    requests:
+      cpu: "250m"
+      memory: "256Mi"
+  persistence:
+    config:
+      size: 1Gi
+      accessMode: ReadWriteOnce
+  ingress:
+    domain: prowlarr.tung.trankim.net
+
+nfs:
+  server: 10.0.8.10
+  path: /mnt/StoragePool/Media
