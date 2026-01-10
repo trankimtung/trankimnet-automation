@@ -57,3 +57,9 @@
     system: yes
     create_home: no
     shell: /sbin/nologin
+
+- name: Install required packages
+  apt:
+    name:
+      - nfs-common
+    state: present
