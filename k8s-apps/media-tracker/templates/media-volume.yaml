@@ -10,7 +10,7 @@ spec:
     storage: 2048Gi
   accessModes:
     - ReadWriteMany
-  persistentVolumeReclaimPolicy: Retain
+  persistentVolumeReclaimPolicy: Delete
   nfs:
     server: {{ .Values.nfs.server }}
     path: {{ .Values.nfs.path }}

@@ -10,7 +10,7 @@ qbittorrent:
   resources:
     limits:
       cpu: "500m"
-      memory: "512Mi"
+      memory: "1Gi"
     requests:
       cpu: "250m"
       memory: "256Mi"
@@ -29,9 +29,9 @@ radarr:
   resources:
     limits:
       cpu: "500m"
-      memory: "1Gi"
+      memory: "512Mi"
     requests:
-      cpu: "250m"
+      cpu: "100m"
       memory: "256Mi"
   persistence:
     config:
@@ -48,9 +48,9 @@ sonarr:
   resources:
     limits:
       cpu: "500m"
-      memory: "1Gi"
+      memory: "512Mi"
     requests:
-      cpu: "250m"
+      cpu: "100m"
       memory: "256Mi"
   persistence:
     config:
@@ -69,7 +69,7 @@ prowlarr:
       cpu: "500m"
       memory: "512Mi"
     requests:
-      cpu: "250m"
+      cpu: "100m"
       memory: "256Mi"
   persistence:
     config:
@@ -79,5 +79,5 @@ prowlarr:
     domain: prowlarr.tung.trankim.net
 
 nfs:
-  server: 10.0.8.10
+  server: 10.0.0.10
   path: /mnt/StoragePool/Media
