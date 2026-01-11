@@ -6,6 +6,8 @@ install-core-charts:
 	helm upgrade -i trust-manager ./charts/trust-manager -n trust-manager --create-namespace
 	helm dep update ./charts/traefik
 	helm upgrade -i traefik ./charts/traefik -n traefik --create-namespace
+	helm dep update ./charts/external-dns
+	helm upgrade -i external-dns ./charts/external-dns -n external-dns --create-namespace
 
 install-core-config:
 	@echo "Installing core config..."
