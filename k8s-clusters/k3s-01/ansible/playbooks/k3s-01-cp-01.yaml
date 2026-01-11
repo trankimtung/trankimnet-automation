@@ -1,0 +1,39 @@
+- name: Setup k3s-01-cp-01 node
+  hosts: k3s-01-cp-01
+  gather_facts: true
+  become: true
+
+  tasks:
+
+    - name: Disable ufw
+      systemd:
+        name: ufw
+        state: stopped
+        enabled: no
+
+    - name: Disable swap
+      ansible.builtin.shell: |
+        swapoff -a
+        sed -i.bak '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+
+    - name: Ensure /etc/rancher/k3s/config.yaml.d directory exists
+      ansible.builtin.file:
+        path: /etc/rancher/k3s/config.yaml.d
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Deploy k3s configuration file
+      ansible.builtin.copy:
+        src: ../files/k3s-01-cp-01-config.yaml
+        dest: /etc/rancher/k3s/config.yaml.d/99-k3s-01-cp-01-config.yaml
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Install k3s server on control plane node
+      ansible.builtin.shell: |
+        curl -sfL https://get.k3s.io | sh -s - server
+      args:
+        executable: /bin/bash

@@ -1,0 +1,8 @@
+cluster-cidr: 192.168.0.0/20
+service-cidr: 192.168.16.0/20
+cluster-dns: 192.168.16.10
+cluster-domain: k3s-01.k8s.local
+write-kubeconfig-mode: 600
+cluster-init: true
+secrets-encryption: true
+service-node-port-range: 30000-32767
