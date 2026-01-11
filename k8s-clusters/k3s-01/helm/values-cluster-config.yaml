@@ -1,0 +1,44 @@
+trustmanager:
+  namespace: trust-manager
+  additionalCaCerts:
+    - |
+      -----BEGIN CERTIFICATE-----
+      MIIBwTCCAWagAwIBAgIRAJzfyfsSzf/LRA8cM04yAuEwCgYIKoZIzj0EAwIwPjEZ
+      MBcGA1UEChMQVHJhbiBLaW0gTmV0d29yazEhMB8GA1UEAxMYVHJhbiBLaW0gTmV0
+      d29yayBSb290IENBMB4XDTI1MTEyMjA5MzQyNVoXDTM1MTEyMDA5MzQyNVowPjEZ
+      MBcGA1UEChMQVHJhbiBLaW0gTmV0d29yazEhMB8GA1UEAxMYVHJhbiBLaW0gTmV0
+      d29yayBSb290IENBMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAETxWgnbj0QZNS
+      7n+rmG40LfOPiAzZyYKjOohDt0sx8RpyvBUZQLdYxXgcAP9Q88wF6x7+DX+TxHUw
+      VqMbY+9JjaNFMEMwDgYDVR0PAQH/BAQDAgEGMBIGA1UdEwEB/wQIMAYBAf8CAQEw
+      HQYDVR0OBBYEFIneOyNnGNR3/dY+muzSbYnt4PQaMAoGCCqGSM49BAMCA0kAMEYC
+      IQD9y6AjXQjfO+hjeEnPsgjQygUHFChKBVGCz98yIEFegAIhANpNi3EoxmNdIe1O
+      H3oJ9UAqAT1lNUOx/ipnJjc9HzW7
+      -----END CERTIFICATE-----
+  bundleName: ca-certificates
+  configMapKey: ca-certificates.crt
+certmanager:
+  clusterIssuer:
+    privateCa:
+      enabled: true
+      name: private-ca
+      acme:
+        server: https://ca.tung.trankim.net/acme/acme/directory
+        email: cert-manager@k3s-01.k8s.cluser.local
+        caBundle: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJ3VENDQVdhZ0F3SUJBZ0lSQUp6Znlmc1N6Zi9MUkE4Y00wNHlBdUV3Q2dZSUtvWkl6ajBFQXdJd1BqRVoKTUJjR0ExVUVDaE1RVkhKaGJpQkxhVzBnVG1WMGQyOXlhekVoTUI4R0ExVUVBeE1ZVkhKaGJpQkxhVzBnVG1WMApkMjl5YXlCU2IyOTBJRU5CTUI0WERUSTFNVEV5TWpBNU16UXlOVm9YRFRNMU1URXlNREE1TXpReU5Wb3dQakVaCk1CY0dBMVVFQ2hNUVZISmhiaUJMYVcwZ1RtVjBkMjl5YXpFaE1COEdBMVVFQXhNWVZISmhiaUJMYVcwZ1RtVjAKZDI5eWF5QlNiMjkwSUVOQk1Ga3dFd1lIS29aSXpqMENBUVlJS29aSXpqMERBUWNEUWdBRVR4V2duYmowUVpOUwo3bitybUc0MExmT1BpQXpaeVlLak9vaER0MHN4OFJweXZCVVpRTGRZeFhnY0FQOVE4OHdGNng3K0RYK1R4SFV3ClZxTWJZKzlKamFORk1FTXdEZ1lEVlIwUEFRSC9CQVFEQWdFR01CSUdBMVVkRXdFQi93UUlNQVlCQWY4Q0FRRXcKSFFZRFZSME9CQllFRkluZU95Tm5HTlIzL2RZK211elNiWW50NFBRYU1Bb0dDQ3FHU000OUJBTUNBMGtBTUVZQwpJUUQ5eTZBalhRamZPK2hqZUVuUHNnalF5Z1VIRkNoS0JWR0N6OTh5SUVGZWdBSWhBTnBOaTNFb3htTmRJZTFPCkgzb0o5VUFxQVQxbE5VT3gvaXBuSmpjOUh6VzcKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQ=="
+      ingress:
+        className: traefik
+    letsencrypt:
+      enabled: true
+      name: letsencrypt
+      acme:
+        server: https://acme-v02.api.letsencrypt.org/directory
+        email: cert-manager@k3s-01.k8s.tung.trankim.net
+      solvers:
+        - dns01:
+            cloudflare:
+              apiTokenSecretRef:
+                name: cloudflare-api-token-secret
+                key: api-token
+          selector:
+            dnsZones:
+              - "trankim.net"

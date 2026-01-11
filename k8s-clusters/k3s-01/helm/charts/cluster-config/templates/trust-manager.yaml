@@ -1,0 +1,16 @@
+apiVersion: trust.cert-manager.io/v1alpha1
+kind: Bundle
+metadata:
+  name: {{ .Values.trustmanager.bundleName }}
+spec:
+  sources:
+    - useDefaultCAs: true
+    {{- if .Values.trustmanager.additionalCaCerts }}
+    {{- range .Values.trustmanager.additionalCaCerts }}
+    - inLine: |-
+{{ . | indent 9 }}
+    {{- end }}
+    {{- end }}
+  target:
+    configMap:
+      key: {{ .Values.trustmanager.configMapKey | quote }}

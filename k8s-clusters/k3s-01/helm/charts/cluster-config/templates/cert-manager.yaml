@@ -1,0 +1,34 @@
+{{- if .Values.certmanager.clusterIssuer.privateCa.enabled }}
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: {{ .Values.certmanager.clusterIssuer.privateCa.name }}
+spec:
+  acme:
+    server: {{ .Values.certmanager.clusterIssuer.privateCa.acme.server }}
+    email: {{ .Values.certmanager.clusterIssuer.privateCa.acme.email }}
+    privateKeySecretRef:
+      name: {{ .Values.certmanager.clusterIssuer.privateCa.name }}-secret
+    solvers:
+      - http01:
+          ingress:
+            ingressClassName: {{ .Values.certmanager.clusterIssuer.privateCa.ingress.className }}
+    caBundle: {{ .Values.certmanager.clusterIssuer.privateCa.acme.caBundle | quote }}
+{{- end }}
+
+{{- if .Values.certmanager.clusterIssuer.letsencrypt.enabled }}
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: {{ .Values.certmanager.clusterIssuer.letsencrypt.name }}
+spec:
+  acme:
+    server: {{ .Values.certmanager.clusterIssuer.letsencrypt.acme.server }}
+    email: {{ .Values.certmanager.clusterIssuer.letsencrypt.acme.email }}
+    privateKeySecretRef:
+      name: {{ .Values.certmanager.clusterIssuer.letsencrypt.name }}-secret
+    solvers:
+      {{- .Values.certmanager.clusterIssuer.letsencrypt.solvers | toYaml | nindent 6 }}
+{{- end }}

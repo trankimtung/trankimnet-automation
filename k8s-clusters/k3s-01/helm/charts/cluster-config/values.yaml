@@ -1,0 +1,30 @@
+trustmanager:
+  namespace: trust-manager
+  bundleName: ca-certificates
+  configMapKey: ca-certificates.crt
+certmanager:
+  clusterIssuer:
+    privateCa:
+      enabled: false
+      name: private-ca
+      acme:
+        server: ""
+        email: ""
+        caBundle: ""
+      ingress:
+        className: ""
+    letsencrypt:
+      enabled: false
+      name: letsencrypt
+      acme:
+        server: https://acme-v02.api.letsencrypt.org/directory
+        email: ""
+      solvers:
+        - dns01:
+            cloudflare:
+              apiTokenSecretRef:
+                name: ""
+                key: ""
+          selector:
+            dnsZones:
+              - ""
