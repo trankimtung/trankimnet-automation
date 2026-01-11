@@ -131,10 +131,13 @@ metadata:
 spec:
   tls:
     - hosts:
-        - {{ .Values.qbittorrent.ingress.domain }}
+        {{- range .Values.qbittorrent.ingress.domain }}
+        - {{ . | quote }}
+        {{- end }}
       secretName: {{ include "media-tracker.fullname" . }}-qbittorrent-tls
   rules:
-    - host: {{ .Values.qbittorrent.ingress.domain }}
+    {{- range .Values.qbittorrent.ingress.domain }}
+    - host: {{ . | quote }}
       http:
         paths:
           - path: /
@@ -144,3 +147,4 @@ spec:
                 name: qbittorrent
                 port:
                   name: http
+    {{- end }}

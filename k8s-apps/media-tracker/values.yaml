@@ -19,7 +19,9 @@ qbittorrent:
       size: 1Gi
       accessMode: ReadWriteOnce
   ingress:
-    domain: qbittorrent.tung.trankim.net
+    domain:
+      - qbittorrent.tung.trankim.net
+      - qbittorrent.rke2-01.k8s.tung.trankim.net
 
 radarr:
   image:
@@ -38,8 +40,9 @@ radarr:
       size: 2Gi
       accessMode: ReadWriteOnce
   ingress:
-    domain: radarr.tung.trankim.net
-
+    domain:
+      - radarr.tung.trankim.net
+      - radarr.rke2-01.k8s.tung.trankim.net
 sonarr:
   image:
     repository: ghcr.io/linuxserver/sonarr
@@ -57,7 +60,9 @@ sonarr:
       size: 2Gi
       accessMode: ReadWriteOnce
   ingress:
-    domain: sonarr.tung.trankim.net
+    domain:
+      - sonarr.tung.trankim.net
+      - sonarr.rke2-01.k8s.tung.trankim.net
 
 prowlarr:
   image:
@@ -76,7 +81,9 @@ prowlarr:
       size: 1Gi
       accessMode: ReadWriteOnce
   ingress:
-    domain: prowlarr.tung.trankim.net
+    domain:
+      - prowlarr.tung.trankim.net
+      - prowlarr.rke2-01.k8s.tung.trankim.net
 
 nfs:
   server: 10.0.0.10

@@ -93,10 +93,13 @@ metadata:
 spec:
   tls:
     - hosts:
-        - {{ .Values.prowlarr.ingress.domain }}
+        {{- range .Values.prowlarr.ingress.domain }}
+        - {{ . }}
+        {{- end }}
       secretName: {{ include "media-tracker.fullname" . }}-prowlarr-tls
   rules:
-    - host: {{ .Values.prowlarr.ingress.domain }}
+    {{- range .Values.prowlarr.ingress.domain }}
+    - host: {{ . | quote }}
       http:
         paths:
           - path: /
@@ -106,3 +109,4 @@ spec:
                 name: prowlarr
                 port:
                   name: http
+    {{- end }}
